@@ -1,0 +1,190 @@
+<div class="grid_10 push_1">
+  <div class="feature_icon">
+    <%= image_tag ("detail_binoculars.svg") %>
+  </div>
+  <p class="pg_title"> idea</p>
+  <div class="rule"></div>
+
+
+
+  <%= form_for(@idea) do |f| %>
+<!-- ****************************** ERROR CHECKING ************************************** -->
+    <% if @idea.errors.any? %>
+      <div id="error_explanation">
+        <h2><%= pluralize(@idea.errors.count, "error") %> prohibited this idea from being saved:</h2>
+
+        <ul>
+        <% @idea.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+<!-- ***************************** SHOW IDEA ********************************************** -->
+
+    <div class="grid_4 card_container">
+      <div class="card">
+        <div class="iframe_wrapper">
+          <%= image_tag @user.image_url(:thumb).to_s %>
+        </div>
+        <div class="user_bio">
+          <%= @user.bio %>
+        </div>
+        <div class="card_description hidden">
+          <a class="card_link" href="<%= url_for :action => "show", :controller => "users", :id => @user.id %>"></a>
+          <span class="card_title" style="font-weight:bold">
+            <a href="/users/<%= @user.id %>"><%= @user.first_name %></a></span>
+          <p style="font-weight:bold">{Skills}</p>
+          <p><%= @user.skill_list %></p>
+          <p style="font-weight:bold">{Employment History}</p>
+          <p><%= @user.employment_history %></p>
+          <p style="font-weight:bold">{Entrepreneurship Goals}</p>
+          <p><%= @user.entrepreneurship_goals %></p>
+        </div>
+      </div>
+      <div class="card_header">
+        <span class="card_contributor"><a href="/users/<%= @user.id %>"><%= @user.first_name %> <%= @user.last_name %></a></span>
+        <span class="card_icons">
+          <%= image_tag('eye_icon.svg')%> <%= @user.views %>
+      </div>
+      <p style="text-align:center; margin-top:30px;">
+        Idea added by <span class="username"><a href="/users/<%= @idea.user.id %>"><%= @idea.user.first_name %></a></span> on <%= @idea.created_on.strftime("%b %e, %Y") %>
+      </p>
+    </div>
+
+
+
+    <div class="grid_5 push_1">
+      <p class="form_title title_rule">Title</p>
+      <%= @idea.title %>
+      <p class="form_title title_rule" style="margin-top:30px;">Tags</p>
+      <span class="username"><%= raw @idea.tag_list.map { |t| link_to t, tag_path(t)}.join(", ") %></span>
+      <p class="form_title title_rule" style="margin-top:30px;">Summary</p>
+      <div class="idea_description"><%= @idea.summary %></div>
+      <p class="form_title title_rule" style="margin-top:30px;">Vision</p>
+      <div class="idea_description"><%= @idea.vision %></div>
+    </div>
+
+    <div class="grid_10" style="margin-top:5px">
+      <p class="form_title">Problem Statement</p>
+      <%= @idea.problem_statement %>
+      <p class="form_title">Details</p>
+      <%= @idea.details %>
+      <p class="form_title">What I Need To Move Forward</p>
+      <%= @idea.what_i_need %>
+    </div>
+  <% end %>
+
+  <div class="grid_10" style="margin-top:40px;">
+    <% if user_signed_in? && @idea.user_id == current_user.id %>
+      <%= link_to(edit_idea_path(@idea)) do %>
+        <div id="edit_profile_btn">Edit
+        </div>
+      <% end %>
+    <% elsif user_signed_in? %>
+      <% if Favorite.exists?(:idea_id => @idea.id, :user_id => current_user.id) %>
+
+      <% else %>
+        <a href="<%= url_for :action => "update_favorites", :controller => "ideas", :id => @idea.id %>">
+          <div id="edit_profile_btn">Follow This Idea
+          </div>
+        </a>
+      <% end %>
+    <% end %>
+  </div>
+
+
+</div>
+
+<div class="grid_12">
+<!-- ********************************* COMMENTS SECTION *********************************** -->
+  <div class="grid_12" style="margin-top: 30px;">
+    <div class="rule"></div>
+  </div>
+
+  <div class="grid_5" style="clear:both; margin-top: 27px;">
+    <div class="grid_5">
+      <div style="font-family:Georgia;font-size:18px;color:#A51D33;">Comments: </div>
+      <% if @idea.comments %>
+        <% @idea.comments.each do |comment| %>
+          <div class="comments">
+            <a href="/users/<%= @idea.user.id %>">
+            <%= comment.user.first_name %></a> on <%= (comment.created_at).strftime("%b %e %Y, %l:%M %p ") %>
+            <br>
+            <%= comment.comment.to_s %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <div class="comment_form grid_5">
+        <%= form_for(@comment) do |g| %>
+          <% if @comment.errors.any? %>
+            <div id="error_explanation">
+              <h2><%= pluralize(@comment.errors.count, "error") %> prohibited this idea from being saved:</h2>
+              <ul>
+              <% @comment.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="field" style="margin-top:30px;">
+            <%= g.text_area :comment %>
+          </div>
+          <%= hidden_field_tag(:idea_id, @idea.id) %>
+          <div class="actions comment_btn">
+            <%= g.submit %>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
+
+<!-- ******************************** FOLLOWING USERS *************************************** -->
+
+  <div class="grid_5 right">
+    <p class="form_title" style="margin-left: 40px;">Users following this idea:</p>
+  </div>
+
+  <div class="grid_5 push_2">
+    <% Favorite.where("idea_id = ?", @idea.id).to_a.each do |favorite| %>
+      <% user = User.find(favorite.user_id) %>
+      <div class="grid_4 card_container">
+        <div class="card">
+          <div class="iframe_wrapper">
+            <%= image_tag user.image_url(:thumb).to_s %>
+          </div>
+          <div class="user_bio">
+            <%= user.bio %>
+          </div>
+          <div class="card_description hidden">
+            <a class="card_link" href="<%= url_for :action => "show", :controller => "users", :id => user.id %>"></a>
+            <span class="card_title" style="font-weight:bold">
+              <a href="/users/<%= user.id %>"><%= user.first_name %></a></span>
+            <p style="font-weight:bold">{Entrepreneurial Status}</p>
+            <p><%= user.status %></p>
+            <p style="font-weight:bold">{Skills}</p>
+            <p><%= user.skill_list %></p>
+            <p style="font-weight:bold">{Stuff I've Done}</p>
+            <p><%= user.employment_history %></p>
+            <p style="font-weight:bold">{Entrepreneurship Goals}</p>
+            <p><%= user.entrepreneurship_goals %></p>
+          </div>
+        </div>
+        <div class="card_header">
+          <span class="card_contributor"><a href="/users/<%= user.id %>"><%= user.first_name %> <%= user.last_name %></a></span>
+          <span class="card_icons">
+            <%= image_tag('eye_icon.svg')%> <%= user.views %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+
+
+

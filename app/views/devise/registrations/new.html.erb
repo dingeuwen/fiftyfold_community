@@ -1,0 +1,110 @@
+<div class="container_12">
+
+  <div class="grid_8 push_2">
+    <div class="feature_icon">
+      <%= image_tag ("pub_profile_bubble.svg") %>
+    </div>
+    <p class="pg_title"> sign up </p>
+
+    <p style="text-align:center; font-size: 16px;">
+      The Startup Network aims to connect you with your future startup cofounder.
+    </p>
+    <p style="text-align:center; font-size: 16px;">
+      It is a social networking site built specifically for HBS students, by an HBS student. It is designed to allow users to share their interests and passions, and to market their skills, experiences, and ideas to other members of the community.
+    </p>
+    <p style="text-align:center; font-size: 16px;">
+      Best of luck!
+    </p>
+
+    <div class="rule"></div>
+
+    <%= form_for(resource, :as => resource_name, :url => registration_path(resource_name), :html => {:multipart => true}) do |f| %>
+      <%= devise_error_messages! %>
+
+      <div class="grid_3">
+        <div class="profile_img" style="display:block; background-color: white;">
+        </div>
+        <p>
+          Choose image to upload
+          <%= f.file_field :image %>
+        </p>
+        <p>
+          Or use an image online. Put url below.
+          <%= f.text_field :remote_image_url %>
+        </p>
+      </div>
+
+      <div class="grid_5" style="margin-left:20px">
+        <p class="form_title">account info</p>
+        <div>
+          <%= f.email_field :email, :class => "form_field", :placeholder => "email (@mba2015.hbs.edu email required)" %>
+        </div>
+        <div>
+          <%= f.password_field :password, :class => "form_field", :placeholder => "password" %>
+        </div>
+        <div>
+          <%= f.password_field :password_confirmation, :class => "form_field", :placeholder => "confirm password" %>
+        </div>
+        <div>
+          <%= f.label "First Name" %><br />
+          <%= f.text_field :first_name, :class => "form_field" %>
+        </div>
+        <div>
+          <%= f.label "Last Name" %><br />
+          <%= f.text_field :last_name, :class => "form_field" %>
+        </div>
+      </div>
+      <div class="grid_8">
+        <p class="form_title">tell us about yourself</p>
+        <div>
+          <!-- TEXT NEEDS TO APPEAR TO THE SIDE ON MOUSEOVER SO THAT USER CAN REMEMBER WHAT THEY WERE WRITING. EITHER THAT OR JUST PUT LABELS ON THESE TEXT FIELDS -->
+          <%= f.label "One-liner bio (160 character limit)" %><br />
+          <%= f.text_area :bio, :cols => "30", :rows => "10", :class => "bio_field", :placeholder => "Tell us about yourself! (briefly. This will be displayed in your tile on the home page)" %>
+        </div>
+          <%= f.label "My entrepreneurial status" %><br />
+          <%= f.text_area :status, :cols => "30", :rows => "10", :class => "bio_field", :placeholder => "eg. looking for a technical cofounder, looking for a team, have a startup, getting over a failed startup etc." %>
+        <div>
+        </div>
+        <div>
+          <%= f.label "Skills (seperate each with comma)" %><br />
+          <%= f.text_area :skill_list, :cols => "30", :rows => "10", :class => "big_text_field" %>
+        </div>
+        <div>
+          <%= f.label "Employment History" %><br />
+          <%= f.text_area :employment_history, :cols => "30", :rows => "10", :class => "big_text_field", :placeholder => "Short summary of your building/hacking/working/professional experience" %>
+        </div>
+        <div>
+          <%= f.label "Entrepreneurship Goals" %><br />
+          <%= f.text_area :entrepreneurship_goals, :cols => "30", :rows => "10", :class => "big_text_field", :placeholder => "What do you hope to achieve with respect to entrepreneurship during your time at HBS?" %>
+        </div>
+        <div>
+          <span>Interest: Role (eg. Marketing, product, design, biz dev, just exploring)</span>
+          <%= f.text_field :role_interest_list, :cols => "30", :rows => "10", :class => "bio_field", :placeholder => "Seperate with commas if multiple" %>
+        </div>
+        <div>
+          <span>Interest: Industry (eg. Education, med device, consumer products, web, mobile, etc)</span>
+          <%= f.text_field :industry_interest_list, :cols => "30", :rows => "10", :class => "bio_field", :placeholder => "Seperate with commas if multiple" %>
+        </div>
+        <div class="submit_btn">
+          <%= f.submit "sign up" %>
+        </div>
+      </div>
+    <% end %>
+</div>
+
+
+<!--
+Stuff that was on the excel spreadsheet
+[X] Name
+[X] Countrie(s)
+[X] Undergrad
+[X] Interest (role)
+[X] Interest (industry)
+[ ] Have startup?
+[ ] Have idea?
+[ ] StatusTell us about your main current business idea
+[ ] Next steps. Are you looking for others to join your business/work on your idea? If so, what are you looking for?
+[X] Experience. What type of skills and experience do you have?
+[X] Goals. What are you looking to achieve over the summer and the next two years?
+[X] e-mail address
+ -->

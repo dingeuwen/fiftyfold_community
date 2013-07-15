@@ -1,0 +1,245 @@
+<div class="grid_12">
+  <div class="feature_icon">
+    <%= image_tag ("pub_profile_bubble.svg") %>
+    <div class="pg_title" style="margin-top:10px">hey there</div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="grid_7">
+    <img style="" src="<%= @user.image_url(:profile).to_s %>">
+  </div>
+
+  <div class="grid_5" style="margin-top: 50px; margin-left:20px;">
+    <h3 style="font-family:Trocchi, serif; text-align: center;">
+      { <span class="username"><%= @user.first_name %> <%= @user.last_name %></span> }
+    </h3>
+    <p>
+      <p class="form_title">Me in Brief:</p>
+      <%= simple_format(@user.bio) %>
+      <p></p>
+      <p class="form_title">Entrepreneurial Status:</p>
+      <%= simple_format(@user.status) %>
+      <p></p>
+      <p class="form_title">Background:</p>
+      <%= simple_format(@user.background) %>
+      <p></p>
+    </p>
+  </div>
+
+
+  <div class="grid_6 profile_container" style="font-family:Georgia">
+
+    <p></p>
+    <p>
+      <% unless @user.twitter_link.nil? or @user.twitter_link.blank? %>
+        <%= link_to image_tag("twitter.svg"), "http://www.twitter.com/#{@user.twitter_link}", target: "_blank" %>
+      <% end %>
+      <% unless @user.github_link.nil? or @user.github_link.blank? %>
+        <%= link_to image_tag("github.svg"), "http://www.github.com/#{@user.github_link}", target: "_blank" %>
+      <% end %>
+      <% unless @user.dribbble_link.nil? or @user.dribbble_link.blank? %>
+        <%= link_to image_tag("dribbble.svg"), "http://www.dribbble.com/#{@user.dribbble_link}", target: "_blank" %>
+      <% end %>
+    </p>
+    <p class="form_title">Stuff I've Done:</p>
+    <%= simple_format(@user.employment_history) %>
+    <p>
+      <p class="form_title">Role Interest:</p>
+      <%= simple_format(raw @user.role_interest_list.map { |t| link_to t, tag_path(t) }.join(', ')) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Industry Interest:</p>
+      <%= simple_format(raw @user.industry_interest_list.map { |t| link_to t, tag_path(t) }.join(', ')) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Skills:</p>
+      <%= simple_format(raw @user.skill_list.map { |t| link_to t, tag_path(t) }.join(', ')) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Goals with Respect to Entrepreneurship at HBS:</p>
+      <%= simple_format(@user.entrepreneurship_goals) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Countries:</p>
+      <%= simple_format(raw @user.country_list.map { |t| link_to t, tag_path(t) }.join(', ')) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Undergrad:</p>
+      <%= simple_format(raw @user.undergrad_list.map { |t| link_to t, tag_path(t) }.join(', ')) %>
+    </p>
+    <p></p>
+    <p>
+      <p class="form_title">Email:</p>
+      <%= simple_format(@user.email) %>
+    </p>
+    <p></p>
+
+<!-- ************ EDIT PROFILE, ADD TO ROLODEX, AND REMOVE FROM ROLODEX BUTTONS ************** -->
+    <% if user_signed_in? && @user.id == current_user.id %>
+      <%= link_to(edit_user_registration_path) do %>
+        <div id="edit_profile_btn">Edit Profile</div>
+      <% end %>
+    <% elsif user_signed_in? %>
+      <% if RolodexCard.where("user1_id = ? AND user2_id = ?", current_user.id, @user.id).to_a.empty?  %>
+        <%= form_tag("/add_to_rolodex", :method => "post") do %>
+          <%= hidden_field_tag(:user2, @user.id) %>
+          <%= submit_tag("Add This Profile To My Rolodex", :id => 'add_rolodex_btn') %>
+        <% end %>
+      <% else %>
+        <%= form_tag("/remove_from_rolodex", :method => "post") do %>
+          <%= hidden_field_tag(:user1, current_user.id) %>
+          <%= hidden_field_tag(:user2, @user.id) %>
+          <%= submit_tag("Remove Profile From Rolodex", :id => 'remove_rolodex_btn') %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+<!-- ******************************* MY IDEAS SECTION ****************************************** -->
+  <div id="content_container" class="grid_6 profile_container" style="position:relative; top:-20px;">
+    <h3 style="margin-bottom: 60px;">
+      <span class="grid_4" style="margin-left: 205px;">{ My Ideas }</span>
+    </h3>
+    <div style="width:300px; text-align:center; margin-left:120px;">
+      <p>Some of the ideas/products/startups/business ideas I'm thinking of</p>
+    </div>
+
+    <% if @ideas %>
+      <% @ideas.each do |idea| %>
+        <div class="grid_4 user_cards right">
+          <div class="idea_card" style="text-align:center;">
+            <div>
+              <p style="font-weight:bold; margin-top:20px;">{The Idea}</p>
+              <p><%= idea.title %></p>
+              <p style="font-weight:bold; margin-top:30px;">{The Pitch}</p>
+              <p><%= idea.summary %></p>
+            </div>
+            <div class="idea_card_description hidden">
+              <a class="card_link" href="<%= url_for :action => "show", :controller => "ideas", :id => idea.id %>"></a>
+              <p style="font-weight:bold; margin-top:20px;">{Problem Statement}</p>
+              <p><%= idea.problem_statement %></p>
+              <p style="font-weight:bold">{Vision}</p>
+              <p><%= idea.vision %></p>
+              <p style="font-weight:bold">{Details}</p>
+              <p><%= idea.details %></p>
+              <p style="font-weight:bold">{What I Need}</p>
+              <p><%= idea.what_i_need %></p>
+              <p style="font-weight:bold">{Tags}</p>
+              <p><%= idea.tag_list %></p>
+            </div>
+          </div>
+
+          <div class="card_header">
+            <span class="card_contributor"><a href="/users/<%= idea.user.id %>"><%= idea.user.first_name %> <%= idea.user.last_name %></a></span>
+            <span class="card_icons">
+              <%= image_tag('heart_icon.svg')%> <%= Favorite.where(:idea_id => idea.id).size %>
+              <%= image_tag('eye_icon.svg')%> <%= idea.views %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+
+
+<!-- ****************************** ROLODEX SECTION ************************************* -->
+  <div id="content_container" class="grid_8 profile_container">
+    <% if user_signed_in? && @user.id == current_user.id %>
+      <h3 id="my_rolodex" style="margin-left: 240px; margin-bottom:50px;">
+        { <span class="username">My Rolodex</span> }
+      </h3>
+      <% RolodexCard.where("user1_id = ?", current_user.id).to_a.each do |rolodexcard| %>
+
+        <% user = User.find(rolodexcard.user2_id) %>
+        <div class="grid_4 card_container">
+          <div class="card">
+            <div class="iframe_wrapper">
+              <%= image_tag user.image_url(:thumb).to_s %>
+            </div>
+            <div class="user_bio">
+              <%= user.bio %>
+            </div>
+            <div class="card_description hidden">
+              <a class="card_link" href="<%= url_for :action => "show", :controller => "users", :id => user.id %>"></a>
+              <span class="card_title">
+                <a href="/users/<%= user.id %>"><%= user.first_name %></a></span>
+              <p><%= user.background %></p>
+              <p>Skills:</p>
+              <p><%= user.skill_list %></p>
+            </div>
+          </div>
+
+          <div class="card_header">
+            <span class="card_contributor"><a href="/users/<%= user.id %>"><%= user.first_name %> <%= user.last_name %></a></span>
+            <span class="card_icons">
+              <%= image_tag('eye_icon.svg')%> <%= user.views %>
+          </div>
+        </div>
+
+      <% end %>
+    <% end %>
+  </div>
+
+<!-- ************************ FAVORITED IDEAS SECTION ************************************ -->
+  <div id="content_container" class="grid_4 profile_container">
+    <% if user_signed_in? && @user.id == current_user.id %>
+      <h3 id="my_rolodex" style="margin-left: 0px; margin-bottom:50px;">
+        { <span class="username">Ideas to Watch</span> }
+      </h3>
+
+      <% @favorites.each do |idea| %>
+        <div class="grid_4 user_cards right">
+          <div class="idea_card" style="text-align:center;">
+            <div>
+              <p style="font-weight:bold; margin-top:20px;">{The Idea}</p>
+              <p><%= idea.title %></p>
+              <p style="font-weight:bold; margin-top:30px;">{The Pitch}</p>
+              <p><%= idea.summary %></p>
+            </div>
+            <div class="idea_card_description hidden">
+              <a class="card_link" href="<%= url_for :action => "show", :controller => "ideas", :id => idea.id %>"></a>
+              <p style="font-weight:bold; margin-top:20px;">{Problem Statement}</p>
+              <p><%= idea.problem_statement %></p>
+              <p style="font-weight:bold">{Vision}</p>
+              <p><%= idea.vision %></p>
+              <p style="font-weight:bold">{Details}</p>
+              <p><%= idea.details %></p>
+              <p style="font-weight:bold">{What I Need}</p>
+              <p><%= idea.what_i_need %></p>
+              <p style="font-weight:bold">{Tags}</p>
+              <p><%= idea.tag_list %></p>
+            </div>
+          </div>
+
+          <div class="card_header">
+            <span class="card_contributor"><a href="/users/<%= idea.user.id %>"><%= idea.user.first_name %> <%= idea.user.last_name %></a></span>
+            <span class="card_icons">
+              <%= image_tag('heart_icon.svg')%> <%= Favorite.where(:idea_id => idea.id).size %>
+              <%= image_tag('eye_icon.svg')%> <%= idea.views %>
+            </span>
+          </div>
+        </div>
+      <% end %>
+
+    <% end %>
+
+  </div>
+
+
+</div>
+
+
+
+
+<!--
+Note that how the tiles look in this page (the profile page) should match exactly
+how it looks on the home page (to be done)
+-->
+
